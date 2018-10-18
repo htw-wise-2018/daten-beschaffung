@@ -21,6 +21,11 @@ Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
 * [Argo Data FTP](ftp://ftp.ifremer.fr/ifremer/argo)
 * [SciSpark-API](https://scispark.jpl.nasa.gov/api/)
 * [Java-NetCDF-API](https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/index.html)
+* [Apache Zeppelin](https://zeppelin.apache.org/)
+
+## Am Anfang empfohlen
+Mittels notebooks von Apache Zeppelin Daten explorieren, weil geringer Konfigurationsaufwand.
+Importiere die Notebooks vom Ordner Zeppelin-Notebooks um loszulegen.
 
 ## Troubleshooting
 * Fragen an [Slack-Gruppe](https://htw-ai-wise-2016.slack.com)
