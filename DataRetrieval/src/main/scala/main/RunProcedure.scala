@@ -2,13 +2,12 @@ package main
 
 import ArgoDataManagement.FloatData
 import Preprocessing.ThisWeekList
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.log4j.{Level, Logger}
 
 // SciSpark imports
 import org.dia.core.SciSparkContext
-
 
 
 object RunProcedure {
