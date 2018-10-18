@@ -1,2 +1,40 @@
-*.class
-*.log
+# sbt
+**/target
+**/.class
+*dist/*
+**/target/
+**/lib_managed/
+**/src_managed/
+**/project/boot/
+**/project/plugins/project/
+**/.history
+**/.cache
+**/.lib/
+
+# Intellij
+**/.iml
+**/.ipr
+**/.iws
+**/.idea/
+**/out
+
+# Eclipse
+**/build
+**/.classpath
+**/.project
+**/.settings
+**/org.scala-ide.sdt.core/META-INF/MANIFEST.MF
+**/org.scala-ide.sdt.update-site/site.xml`
+**/.scala_dependencies
+**/*.worksheet
+**/bin/
+
+# Vim
+**/tags
+**/*.*.swp
+**/*.*.swo
+
+# Other
+**/.DS_Store
+**/*.log
+**/SciSpark.jar
