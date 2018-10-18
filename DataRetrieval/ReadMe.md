@@ -18,7 +18,7 @@ Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
 
 ## Hilfreiche Links
 * [Argo DOI](http://www.argodatamgt.org/Access-to-data/Argo-DOI-Digital-Object-Identifier)
-* [Argo Data FTP](ftp://ftp.ifremer.fr/ifremer/argo)
+* Argo Data FTP: ftp://ftp.ifremer.fr/ifremer/argo
 * [SciSpark-API](https://scispark.jpl.nasa.gov/api/)
 * [Java-NetCDF-API](https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/index.html)
 * [Apache Zeppelin](https://zeppelin.apache.org/)
