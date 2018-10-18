@@ -16,6 +16,12 @@ Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
 ## Testlauf
 * Im Terminal: `sbt run`
 
+## Hilfreiche Links
+* [Argo DOI](http://www.argodatamgt.org/Access-to-data/Argo-DOI-Digital-Object-Identifier)
+* [Argo Data FTP](ftp://ftp.ifremer.fr/ifremer/argo)
+* [SciSpark-API](https://scispark.jpl.nasa.gov/api/)
+* [Java-NetCDF-API](https://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/index.html)
+
 ## Troubleshooting
 * Fragen an [Slack-Gruppe](https://htw-ai-wise-2016.slack.com)
 * Bei gelösten Problemen bitte *ReadMe.md* erweitern
