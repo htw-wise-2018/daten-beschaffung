@@ -7,7 +7,9 @@ Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
   * [SciSpark](https://drive.google.com/open?id=1Jxyb9vFHc1uyqoPp-nNAJ5nB8XTL7bB9) herunterladen
   * Erstellen eines lib Verzeichnisses root-Verzeichnis dieses Programms
   * Die heruntergeladene SciSpark.jar ins neue lib Verzeichnis bewegen
-2. IDE
+2. Bearbeiten der src/main/resources/test_float.txt
+  * Passe den Pfad ([???]/src/main/resources/1900063_prof.nc), deinem Projektpfad an
+3. IDE
   * Für Eclipse `sbt eclipse`, Projekt import und die Properties wie im Bild setzen:
   ![Scala compiler settings](eclipse_properties.png)
   * Für IntelliJ import als sbt Projekt
