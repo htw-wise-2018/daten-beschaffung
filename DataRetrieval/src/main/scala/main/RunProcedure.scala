@@ -1,6 +1,7 @@
 package main
 
 import ArgoDataManagement.FloatData
+import Cassandra.Connector
 import Preprocessing.ThisWeekList
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
@@ -34,12 +35,13 @@ object RunProcedure {
 
     // RUN DEMOS
     thisWeekListDemo
-    localNetCDFtoRDDdemo
-    floatDataDemo
+   // localNetCDFtoRDDdemo
+   // floatDataDemo
     
     // Stop SparkSession
     spark.stop()
   }
+
 
   def floatDataDemo: Unit ={
     println("-------- START : Float data demo ---------")
@@ -51,11 +53,23 @@ object RunProcedure {
   def thisWeekListDemo: Unit ={
 
     println("-------- START : This week list demo ---------")
-    val float_list = new ThisWeekList(sc, spark.sqlContext)
-    val float_list_df = float_list.toDF
-    float_list_df.show                          // print DataFrame as formatted table
-    val first_file = float_list_df.select("file").first.mkString
-    println(s"First file:\n${first_file}")
+//    val float_list = new ThisWeekList(sc, spark.sqlContext)
+
+
+
+//    val float_list_df = float_list.toDF
+
+    //get the data from the ftp as RDD ans dave it to the database
+//    val float_list_df = float_list.toRDD
+//    Connector.saveData(float_list_df, sc)
+
+    //get the data from the database
+   Connector.loadData(sc)
+
+
+    //      float_list_df.show                          // print DataFrame as formatted table
+   // val first_file = float_list_df.select("file").first.mkString
+  //  println(s"First file:\n${first_file}")
     println("-------- END : This week list demo ---------")
   }
 

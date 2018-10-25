@@ -29,6 +29,11 @@ Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
 Mittels notebooks von Apache Zeppelin Daten explorieren, weil geringer Konfigurationsaufwand.
 Importiere die Notebooks vom Ordner Zeppelin-Notebooks um loszulegen.
 
+#cassandra
+* [GitHub](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/0_quick_start.md)
+* [medium](https://medium.com/@areeves9/cassandras-gossip-on-os-x-single-node-installation-of-apache-cassandra-on-mac-634e6729fad6)
+
+
 ## Troubleshooting
 * Fragen an [Slack-Gruppe](https://htw-ai-wise-2016.slack.com)
 * Bei gelösten Problemen bitte *ReadMe.md* erweitern

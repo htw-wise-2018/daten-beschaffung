@@ -35,6 +35,7 @@ class ThisWeekList( sc: SparkContext,
 
   private[this] def toArray: Array[Array[String]] = {
     val without_header = rowArray.drop(schema_string._2+1)
+
     without_header.map(row=>row.split(","))
   }
 
