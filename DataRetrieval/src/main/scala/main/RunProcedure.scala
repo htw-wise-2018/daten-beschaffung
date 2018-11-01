@@ -1,26 +1,29 @@
 package main
 
-import ArgoDataManagement.FloatData
+import database.DB
+import ArgoDataManagement.BuoyData
 
 
 object RunProcedure {
 
-
   def main(args: Array[String]) {
-
-
-    // RUN DEMO
-    floatDataDemo
-
+    dbDemo
+  }
+  
+  def dbDemo: Unit = {
+    println("-------- START : mongodb demo ---------")
+    val testDB = new DB
+    val buoys = new BuoyData
+    testDB.insertBuoys(buoys)
+    testDB.close
+    println("-------- END : mongodb demo ---------")
   }
 
-  def floatDataDemo: Unit ={
-    println("-------- START : Float data demo ---------")
-    val fd = new FloatData
-    println(s"Longitude array:\n[${fd.getLongitude.mkString(",")}]")
-    println("-------- END : Float data demo ---------")
+  def buoyDataDemo: Unit = {
+    println("-------- START : Buoy data demo ---------")
+    val bd = new BuoyData
+    println(s"Longitude array:\n[${bd.getLongitude.mkString(",")}]")
+    println("-------- END : Buoy data demo ---------")
   }
-
-
 
 }
