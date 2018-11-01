@@ -23,6 +23,7 @@ object RunProcedure {
     println("-------- START : Buoy data demo ---------")
     val bd = new BuoyData
     println(s"Longitude array:\n[${bd.getLongitude.mkString(",")}]")
+    println(bd.getGlobalAttributes)
     println("-------- END : Buoy data demo ---------")
   }
 

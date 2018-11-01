@@ -14,6 +14,11 @@ class BuoyData ( netcdf_path:String="src/main/resources/1900063_prof.nc") {
 
   def getVariables: Seq[Variable] = getJavaNetCDFObject.getVariables().asScala
 
+  def getGlobalAttributes: Map[String,String]={
+    getJavaNetCDFObject.getGlobalAttributes().asScala
+      .map(globAttr=>(globAttr.getName,globAttr.getStringValue)).toMap
+  }
+
 
   def getMap:Map[String,Array[_ >: Double with Int with Char with Float <: AnyVal]] = getVariables.map(file_var => {
     val key = caseConvert(file_var.getShortName)
