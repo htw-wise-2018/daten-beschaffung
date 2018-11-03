@@ -46,7 +46,7 @@ class DB(name: String = "ECCO", collection: String = "buoy") {
   
    def insertAllBuoys(buoys: BuoyData): Unit = { 
 
-    val pairedGeoCords = buoys.getLongitude.asInstanceOf[List[Double]].zip(buoys.getLatitude.asInstanceOf[List[Double]])
+    val pairedGeoCords = buoys.getLongitude.asInstanceOf[Array[Double]].zip(buoys.getLatitude.asInstanceOf[Array[Double]])
     val allBuoys = pairedGeoCords.map(geocords => Buoy(geocords._1,geocords._2))
     
     val insertObservable: Observable[Completed] = dbBuoy.insertMany(allBuoys)

@@ -14,7 +14,8 @@ object RunProcedure {
     println("-------- START : mongodb demo ---------")
     val testDB = new DB
     val buoys = new BuoyData
-    testDB.insertFirstBuoy(buoys)
+    //testDB.insertFirstBuoy(buoys)
+    testDB.insertAllBuoys(buoys)
     testDB.close
     println("-------- END : mongodb demo ---------")
   }
