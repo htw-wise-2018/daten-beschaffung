@@ -33,8 +33,9 @@ class BuoyData ( netcdf_path:String="src/main/resources/1900063_prof.nc") {
     }
   }).toMap
 
-  // In future better with symbol or enum instead of string
+  // TODO In future better with symbol or enum instead of string
   def getLongitude = getMap("longitude")
+  def getLatitude = getMap("latitude")
 
 
   // MACRO_CASE to camelCase
