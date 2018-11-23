@@ -42,4 +42,5 @@ class ThisWeekList( sc: SparkContext,
 
 
   def toDF: DataFrame = sqlContext.createDataFrame(toRDD, schema)
+
 }

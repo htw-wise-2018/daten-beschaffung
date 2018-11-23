@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 // SciSpark imports
 import org.dia.core.SciSparkContext
-
+import Preprocessing.MongoController;
 
 object RunProcedure {
 
@@ -19,11 +19,22 @@ object RunProcedure {
   val conf = new SparkConf()
     .setMaster("local")
     .setAppName("HTW-Argo")
+
+  // mongodb connect
+  val host       = "127.0.0.1"
+  val port       = 12345
+  val db         = "db"
+  val collection = "collection"
+  val user       = "user"
+  val password   = "password"
+
   val sc = new SparkContext(conf)
   val ssc = new SciSparkContext(sc)
   val spark = SparkSession
     .builder()
     .appName("Spark SQL for Argo Data")
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.coll") //database.collectionName
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.coll")
     .config(conf)
     .getOrCreate()
 
@@ -36,9 +47,22 @@ object RunProcedure {
     thisWeekListDemo
     localNetCDFtoRDDdemo
     floatDataDemo
+
+    //save data to humongous
+    saveData
     
     // Stop SparkSession
     spark.stop()
+  }
+
+  def saveData: Unit = {
+    println("-------- START : saving this week list demo ---------")
+    val float_list = new ThisWeekList(sc, spark.sqlContext)
+    val float_list_rdd = float_list.toRDD
+
+    MongoController.saveRDD(float_list_rdd, sc)
+
+    println("-------- END : saving this week list demo ---------")
   }
 
   def floatDataDemo: Unit ={
@@ -63,6 +87,9 @@ object RunProcedure {
     println("-------- START : Local NetCDF to RDD demo ---------")
     println("Local netCDF-file to RDD")
     val scientificRDD = ssc.netcdfFileList("src/main/resources/test_float.txt", List("PRES","LONGITUDE", "LATITUDE"))
+
+
+
     val arr = scientificRDD.take(1)(0).data
     println(arr.size)
     println("TOTAL "+arr.mkString(" "))
