@@ -1,10 +1,15 @@
 package main
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{DataFrame, Row, SQLContext}
+import org.apache.spark.sql.{SparkSession, DataFrame, Row, SQLContext}
+import com.mongodb.spark._
+
+
+import org.bson.Document
+import org.bson.types.ObjectId
+
 
 import database.DB
 import ArgoDataManagement.BuoyData
@@ -17,6 +22,8 @@ object RunProcedure {
   val conf = new SparkConf()
     .setMaster("local")
     .setAppName("HTW-Argo")
+    .set("spark.mongodb.output.uri","mongodb://127.0.0.1/ECCO.buoy")
+    .set("spark.mongodb.input.uri","mongodb://127.0.0.1/ECCO.buoy?readPreference=primaryPreferred")
   val sc = new SparkContext(conf)
   val spark = SparkSession
     .builder()
@@ -25,8 +32,9 @@ object RunProcedure {
     .getOrCreate()
 
   def main(args: Array[String]) {
+    
     //dbDemo
-    buoyDataDemo
+    buoyDataDemoMongoDB
   }
 
   def dbDemo: Unit = {
@@ -46,6 +54,24 @@ object RunProcedure {
     println(bd.getGlobalAttributes)
     println(bd.getMap.keys)
     println(bd.getDF(sc, spark.sqlContext).show())
+    println("-------- END : Buoy data demo ---------")
+  }
+  
+  def buoyDataDemoMongoDB: Unit = {
+    println("-------- START : Buoy data demo ---------")
+    val bd = new BuoyData
+    val bdDF = bd.getDF(sc, spark.sqlContext)
+    println(bdDF.show())
+    
+    bdDF.select("floatSerialNo", "longitude").write.
+      format("com.mongodb.spark.sql.DefaultSource").mode("append").
+      save()
+    //val df2 = MongoSpark.load(spark)
+    //println(df2.show())
+    //val buoysFromDB = spark.read.
+    //  format("com.mongodb.spark.sql.DefaultSource").
+    //  load()
+    //println(buoysFromDB.show())
     println("-------- END : Buoy data demo ---------")
   }
 
