@@ -32,6 +32,12 @@ class BuoyData(netcdf_path: String = "src/main/resources/1900063_prof.nc") {
     return res.mkString("")
   }
   
+  // Cast list of float to list of double for mongodb
+  private[this] def floatToDouble(in: List[Float]):List[Double]={
+    val out = in.map(float =>  float.toDouble )
+    return out
+  }
+  
   def getMap: Map[String, Array[_ >: Double with Int with String with Float]] = {
     getVariables
       .filter(file_var => file_var.getDimensions.get(0).getName == "N_PROF")
@@ -97,9 +103,11 @@ class BuoyData(netcdf_path: String = "src/main/resources/1900063_prof.nc") {
           }
           case "float" =>  {
               if (dims.size == 2) {
-                  (StructField(key, ArrayType(FloatType,true), true), value.asInstanceOf[Array[Array[Float]]].toList) 
+                  (StructField(key, ArrayType(DoubleType,true), true),
+                      value.asInstanceOf[Array[Array[Float]]].
+                      toList.map(floatList=>floatToDouble(floatList.toList)) ) 
               }else{
-                 (StructField(key, FloatType, true), value.asInstanceOf[Array[Float]].toList) 
+                 (StructField(key, DoubleType, true),floatToDouble(value.asInstanceOf[Array[Float]].toList)) 
               }
           }
           case _ => throw new ArgoFloatException("\n   --- Required: [int || double || char || float] as variable datatypes from raw netCDF\n" +

@@ -62,8 +62,8 @@ object RunProcedure {
     val bd = new BuoyData
     val bdDF = bd.getDF(sc, spark.sqlContext)
     println(bdDF.show())
-    
-    bdDF.select("floatSerialNo", "longitude").write.
+    bdDF.select("floatSerialNo", "longitude", "latitude", "platformNumber", "projectName", "juld",
+        "platformType", "configMissionNumber", "cycleNumber","pres","temp","psal").write.
       format("com.mongodb.spark.sql.DefaultSource").mode("append").
       save()
     //val df2 = MongoSpark.load(spark)
