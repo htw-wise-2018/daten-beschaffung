@@ -24,6 +24,7 @@ object RunProcedure {
     .setAppName("HTW-Argo")
     .set("spark.mongodb.output.uri","mongodb://127.0.0.1/ECCO.buoy")
     .set("spark.mongodb.input.uri","mongodb://127.0.0.1/ECCO.buoy?readPreference=primaryPreferred")
+    .set("spark.sql.warehouse.dir", "file:///c:/tmp/spark-warehouse")
   val sc = new SparkContext(conf)
   val spark = SparkSession
     .builder()
