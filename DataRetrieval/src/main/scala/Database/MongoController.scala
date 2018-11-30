@@ -19,18 +19,24 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
 
   /**
     * get the latest update_date from mongoDB
+    *
     * @return
     */
   def getLastUpdate: String = {
 
     val readConfig = ReadConfig(Map("collection" -> "lastupdate", "readPreference.name" -> "secondaryPreferred"), Some(ReadConfig(sc)))
     val customRdd = MongoSpark.load(sc, readConfig)
-    customRdd.map(x => x.getString("date")).first()
+    if(!isEmpty(customRdd)){
+      customRdd.map(x => x.getString("date")).first()
+    } else {
+      ""
+    }
 
   }
 
   /**
     * get the latest update_date from the argo data server
+    *
     * @return
     */
   def loadLatestData: String = {
@@ -44,20 +50,24 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
   }
 
   /**
+    * check if an RDD is empty
+    * @param rdd
+    * @tparam T
+    * @return
+    */
+  def isEmpty[T](rdd : RDD[T]) = {
+    rdd.take(1).length == 0
+  }
+
+  /**
     * check if the data update date is changed, if so change it in the database
     */
   def checkLastUpdate: Unit = {
 
-
     val updateDate = getLastUpdate // get the update date from the db
-    val lastUpdate = "9999" // get the update date from the server
-//    val lastUpdate = loadLatestData // get the update date from the server
+    val lastUpdate = loadLatestData // get the update date from the server
 
-    println(getLastUpdate)
-
-
-    if(updateDate !=  lastUpdate){
-
+    if (updateDate != lastUpdate) {
 
       //TODO- update the specific record and not add to the collection another record
 
@@ -68,10 +78,6 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
     }
 
   }
-
-
-
-
 
 
   /**
