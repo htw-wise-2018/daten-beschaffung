@@ -2,6 +2,7 @@ package main
 
 import ArgoDataManagement.FloatData
 import Preprocessing.ThisWeekList
+import com.mongodb.spark.MongoConnector
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -9,6 +10,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 // SciSpark imports
 import org.dia.core.SciSparkContext
 import Preprocessing.MongoController;
+
 
 object RunProcedure {
 
@@ -39,14 +41,13 @@ object RunProcedure {
     .getOrCreate()
 
 
-
   def main(args: Array[String]) {
 
 
     // RUN DEMOS
-    thisWeekListDemo
-    localNetCDFtoRDDdemo
-    floatDataDemo
+//    thisWeekListDemo
+//    localNetCDFtoRDDdemo
+//    floatDataDemo
 
     //save data to humongous
     saveData
@@ -60,7 +61,11 @@ object RunProcedure {
     val float_list = new ThisWeekList(sc, spark.sqlContext)
     val float_list_rdd = float_list.toRDD
 
-    MongoController.saveRDD(float_list_rdd, sc)
+//    MongoController.saveRDD(float_list_rdd, sc)
+
+    val humongous = new MongoController(sc, float_list_rdd)
+
+    humongous.checkLastUpdate
 
     println("-------- END : saving this week list demo ---------")
   }

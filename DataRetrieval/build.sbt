@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
 	"com.joestelmach" % "natty" % "0.11",
 	"edu.ucar" % "cdm" % "4.6.0",
 	"org.datasyslab" % "sernetcdf" % "0.1.0",
-	"org.mongodb" % "bson" % "3.9.0"
-
+	"org.mongodb" % "bson" % "3.9.0",
+	"com.typesafe.akka" %% "akka-actor" % "2.5.18",
+	"com.springml" % "spark-sftp_2.11" % "1.1.0"
 )
