@@ -10,20 +10,25 @@ import com.mongodb.spark._
 import org.bson.Document
 import org.bson.types.ObjectId
 
-
-import database.DB
-import ArgoDataManagement.BuoyData
+import preprocessing.ThisWeekList
+import netcdfhandling.BuoyData
 
 object RunProcedure {
 
   // Omit INFO log in console
   val rootLogger = Logger.getLogger("org").setLevel(Level.WARN)
 
+  val hadoopUser = sys.env("HTW_MONGO_USER")
+  val hadoopPassword = sys.env("HTW_MONGO_PWD")
+  val hadoopDB = sys.env("HTW_MONGO_DB")
+  val hadoopPort = sys.env.getOrElse("HTW_MONGO_PORT","27020")
+  val hadoopHost = sys.env.getOrElse("HTW_MONGO_HOST", "hadoop05.f4.htw-berlin.de")
+  
   val conf = new SparkConf()
     .setMaster("local")
     .setAppName("HTW-Argo")
-    .set("spark.mongodb.output.uri","mongodb://127.0.0.1/ECCO.buoy")
-    .set("spark.mongodb.input.uri","mongodb://127.0.0.1/ECCO.buoy?readPreference=primaryPreferred")
+    .set("spark.mongodb.output.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy")
+    .set("spark.mongodb.input.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy?readPreference=primaryPreferred")
   val sc = new SparkContext(conf)
   val spark = SparkSession
     .builder()
@@ -32,29 +37,29 @@ object RunProcedure {
     .getOrCreate()
 
   def main(args: Array[String]) {
-    
-    //dbDemo
-    buoyDataDemoMongoDB
-  }
-
-  def dbDemo: Unit = {
-    println("-------- START : mongodb demo ---------")
-    val testDB = new DB
-    val buoys = new BuoyData
-    testDB.insertFirstBuoy(buoys)
-    testDB.insertAllBuoys(buoys)
-    testDB.close
-    println("-------- END : mongodb demo ---------")
+    //buoyDataDemoMongoDB
+    //thisWeekListDemo
   }
 
   def buoyDataDemo: Unit = {
     println("-------- START : Buoy data demo ---------")
     val bd = new BuoyData
-    println(s"Longitude array:\n[${bd.getLongitude.mkString(",")}]")
+    println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
     println(bd.getGlobalAttributes)
     println(bd.getMap.keys)
     println(bd.getDF(sc, spark.sqlContext).show())
     println("-------- END : Buoy data demo ---------")
+  }
+ 
+  def thisWeekListDemo: Unit = {
+
+    println("-------- START : This week list demo ---------")
+    val buoy_list = new ThisWeekList(sc, spark.sqlContext)
+    val buoy_list_df = buoy_list.toDF
+    buoy_list_df.show // print DataFrame as formatted table
+    val first_file = buoy_list_df.select("file").first.mkString
+    println(s"First file:\n${first_file}")
+    println("-------- END : This week list demo ---------")
   }
   
   def buoyDataDemoMongoDB: Unit = {
