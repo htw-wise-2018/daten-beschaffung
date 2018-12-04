@@ -29,6 +29,7 @@ object RunProcedure {
     .setAppName("HTW-Argo")
     .set("spark.mongodb.output.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy")
     .set("spark.mongodb.input.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy?readPreference=primaryPreferred")
+
   val sc = new SparkContext(conf)
   val spark = SparkSession
     .builder()
