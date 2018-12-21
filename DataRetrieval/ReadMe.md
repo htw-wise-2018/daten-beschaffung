@@ -3,14 +3,10 @@
 Scala Spark SciSpark Programm zur Datenbeschaffung und Datenmanagement
 
 ## Vorraussetzung
-1. Einbinden der externen Library SciSpark
-  * [SciSpark](https://drive.google.com/open?id=1Jxyb9vFHc1uyqoPp-nNAJ5nB8XTL7bB9) herunterladen
-  * Erstellen eines lib Verzeichnisses root-Verzeichnis dieses Programms
-  * Die heruntergeladene SciSpark.jar ins neue lib Verzeichnis bewegen
-2. IDE
-  * Für Eclipse `sbt eclipse`, Projekt import und die Properties wie im Bild setzen:
+IDE
+* Für Eclipse `sbt eclipse`, Projekt import und die Properties wie im Bild setzen:
   ![Scala compiler settings](eclipse_properties.png)
-  * Für IntelliJ import als sbt Projekt
+* Für IntelliJ import als sbt Projekt
 
 
 ## Testlauf

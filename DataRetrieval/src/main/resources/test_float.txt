@@ -1,1 +1,0 @@
-/Users/mehdidridi/Desktop/daten-beschaffung/DataRetrieval/src/main/resources/1900063_prof.nc

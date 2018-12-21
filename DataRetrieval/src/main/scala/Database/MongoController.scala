@@ -1,35 +1,97 @@
-package Preprocessing
+package Database
+
+import sys.process._
+import java.net.URL
+import java.io.File
 
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, Row, SQLContext}
+import org.apache.spark.sql.Row
 import org.bson.Document
 import com.mongodb.spark._
-import akka.actor.Actor
-import akka.actor.Props
-
-import scala.concurrent.duration._
 import com.mongodb.spark.config._
 import main.RunProcedure.{sc, spark}
-import com.mongodb.MongoClient
+import netcdfhandling.BuoyData
+import preprocessing.ThisWeekList
 
-class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
+import scala.io.Source
+import java.io.{FileNotFoundException, IOException}
+import java.io._
+
+class MongoController(sc: SparkContext) {
+
+  @transient
+  val downloadsPath = "src/main/resources/Downloads/"
+
+  @transient
+  val updateDate = "updateDate.txt"
 
 
   /**
-    * get the latest update_date from mongoDB
+    * get the latest netcdf data from the server and "add them" to the database
+    */
+  def saveLatestData(buoydf: RDD[Row]): Unit = {
+
+    //path where the files will be saved from the server
+    val downloadPath = this.downloadsPath
+
+    //if the Download directory doesnt exist create it
+    val scc = sc.parallelize(buoydf.collect)
+
+    scc.map(x => {
+
+      val path = x(0).toString
+      // Split path into segments
+      val segments = path.split("/")
+      // Grab the last segment
+      val documentName = segments(segments.length - 1)
+
+
+      //get the source file from the server
+      new URL("ftp://ftp.ifremer.fr/ifremer/argo/dac/" + path) #> new File(downloadPath + documentName) !!
+
+
+      val bd = new BuoyData(downloadPath + documentName)
+
+      println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
+
+      //save the data to mongodb
+//      val bdDF = bd.getDF(sc, spark.sqlContext)
+//      println(bdDF.show())
+//      bdDF.select("floatSerialNo", "longitude", "latitude", "platformNumber", "projectName", "juld",
+//        "platformType", "configMissionNumber", "cycleNumber", "pres", "temp", "psal").write.
+//        format("com.mongodb.spark.sql.DefaultSource").mode("append").
+//        save()
+
+      // delete the source file
+      new File(downloadPath + documentName).delete()
+
+
+    }).collect()
+
+
+  }
+
+
+  /**
+    * get the latest update_date from file
     *
     * @return
     */
   def getLastUpdate: String = {
 
-    val readConfig = ReadConfig(Map("collection" -> "lastupdate", "readPreference.name" -> "secondaryPreferred"), Some(ReadConfig(sc)))
-    val customRdd = MongoSpark.load(sc, readConfig)
-    if(!isEmpty(customRdd)){
-      customRdd.map(x => x.getString("date")).first()
-    } else {
-      ""
+    try {
+
+      val inputFile = Source.fromFile(updateDate)
+      val line = inputFile.bufferedReader.readLine
+      inputFile.close
+
+      line
+
+
+    } catch {
+      case e: FileNotFoundException => ""
+      case e: IOException => ""
     }
 
   }
@@ -39,10 +101,11 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
     *
     * @return
     */
-  def loadLatestData: String = {
+  def loadLatestUpdateDate: String = {
 
     val thisWeek = new ThisWeekList(sc, spark.sqlContext)
     val dateLine = thisWeek.getUpdateDate
+
     val words = dateLine._1 replaceAll(" +", " ") split " " toList
 
     words.last
@@ -51,11 +114,12 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
 
   /**
     * check if an RDD is empty
+    *
     * @param rdd
     * @tparam T
     * @return
     */
-  def isEmpty[T](rdd : RDD[T]) = {
+  def isEmpty[T](rdd: RDD[T]) = {
     rdd.take(1).length == 0
   }
 
@@ -65,35 +129,26 @@ class MongoController(sc: SparkContext, float_list_rdd: RDD[Row]) {
   def checkLastUpdate: Unit = {
 
     val updateDate = getLastUpdate // get the update date from the db
-    val lastUpdate = loadLatestData // get the update date from the server
+    val lastUpdate = loadLatestUpdateDate // get the update date from the server
 
     if (updateDate != lastUpdate) {
 
-      //TODO- update the specific record and not add to the collection another record
 
-      val writeConfig = WriteConfig(Map("collection" -> "lastupdate", "writeConcern.w" -> "majority"), Some(WriteConfig(sc)))
-      val sparkDocuments = sc.parallelize((1 to 1).map(i => Document.parse(s"{date: $lastUpdate}")))
-      MongoSpark.save(sparkDocuments, writeConfig)
+      //save the new update date
+      import java.io.PrintWriter
+      new PrintWriter("updateDate.txt") {
+        write(lastUpdate); close
+      }
+
+      //save the new date to the Database
+      val buoy_list = new ThisWeekList(sc, spark.sqlContext)
+      val buoy_list_df = buoy_list.toDF.rdd
+      saveLatestData(buoy_list_df)
 
     }
 
   }
 
 
-  /**
-    * saves data RDD to Mongo
-    *
-    * @param float_list_rdd
-    * @param sc
-    */
-  def saveRDD(float_list_rdd: RDD[Row], sc: SparkContext) = {
-
-    val res = float_list_rdd.map(x => (x(0), x(1), x(2), x(3))).map(x => Document.parse(s"{file: '${x._1}', date: '${x._2}', lat: '${x._3}', long: '${x._4}' }")).collect().toSeq
-    val collection = sc.parallelize(res)
-
-    MongoSpark.save(collection)
-
-  }
-
-
 }
+
