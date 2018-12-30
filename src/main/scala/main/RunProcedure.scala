@@ -34,10 +34,12 @@ object RunProcedure {
     val spark = SparkSession
       .builder()
       .appName("Spark SQL for Argo Data")
-      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.coll") //database.collectionName
-      .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.coll")
+//      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.coll") //database.collectionName
+//      .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.coll")
       .config(conf)
       .getOrCreate()
+
+
 
   def main(args: Array[String]) {
     thisWeekListDemo
@@ -58,12 +60,15 @@ object RunProcedure {
   def thisWeekListDemo: Unit = {
 
     println("-------- START : This week list demo ---------")
-//    val buoy_list = new ThisWeekList(sc, spark.sqlContext)
-//    val buoy_list_df = buoy_list.toDF.rdd
+    val buoy_list = new ThisWeekList(sc, spark.sqlContext)
+    val buoy_list_df = buoy_list.toDF
+
+//    val bd = new BuoyData
+//    val bdDF = bd.getDF(sc, spark.sqlContext)
 
 
     val mg = new MongoController(sc)
-    mg.checkLastUpdate
+    mg.checkLastUpdate(buoy_list_df)
 
 //    buoy_list_df.show // print DataFrame as formatted table
 //    val first_file = buoy_list_df.select("file").first.mkString
@@ -77,7 +82,7 @@ object RunProcedure {
 
     val bd = new BuoyData
     val bdDF = bd.getDF(sc, spark.sqlContext)
-    println(bdDF.show())
+
     bdDF.select("floatSerialNo", "longitude", "latitude", "platformNumber", "projectName", "juld",
       "platformType", "configMissionNumber", "cycleNumber", "pres", "temp", "psal").write.
       format("com.mongodb.spark.sql.DefaultSource").mode("append").
