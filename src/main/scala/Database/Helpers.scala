@@ -23,7 +23,7 @@ import scala.concurrent.duration.Duration
 
 import org.mongodb.scala._
 
-object Helpers {
+object Helpers extends Serializable{
 
   implicit class DocumentObservable[C](val observable: Observable[Document]) extends ImplicitObservable[Document] {
     override val converter: (Document) => String = (doc) => doc.toJson

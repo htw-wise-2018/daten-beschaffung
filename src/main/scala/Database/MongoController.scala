@@ -37,32 +37,44 @@ import org.mongodb.scala.model.Updates._
 import org.mongodb.scala.model.Filters._
 
 
-class MongoController(sc: SparkContext) {
+class MongoController(sc: SparkContext) extends Serializable{
 
 
   // Use a Connection String
+  @transient
   val mongoClient: MongoClient = MongoClient("mongodb://localhost:27017")
+  @transient
   val database: MongoDatabase = mongoClient.getDatabase("test")
+  @transient
   val updateTimeCollection: MongoCollection[Document] = database.getCollection("lastupdate")
+  @transient
   val dataCollection: MongoCollection[Document] = database.getCollection("coll")
 
-  val SparkCon = sc
 
   @transient
   val downloadsPath = "src/main/resources/Downloads/"
 
+
+  val sparkCon = this.sc
+
+
+
   /**
     * get the latest netcdf data from the server and "add them" to the database
     */
-  def saveLatestData(buoydf: DataFrame): Unit = {
+  def saveLatestData: Unit = {
+
+
+
+    val buoy_list = new ThisWeekList(sparkCon, spark.sqlContext)
+    val buoydf = buoy_list.toDF.rdd
 
     //path where the files will be saved from the server
     val downloadPath = this.downloadsPath
 
+    //if the Download directory doesnt exist create it
 
-
-
-    val scc = sc.parallelize(buoydf.collect)
+    val scc = sparkCon.parallelize(buoydf.collect)
 
     scc.map(x => {
 
@@ -81,34 +93,29 @@ class MongoController(sc: SparkContext) {
 
       println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
 
-      // well, it's time to save/update the new boy
-
       //get the doc from mongo
-      val updateDate = dataCollection.find()
-        .projection(Projections.fields(Projections.include("floatSerialNo")))
-        .first()
-
-      val isEmpty = Helpers.DocumentObservable(updateDate).results().size
-
-      if(isEmpty != 0){
-
-        //TODO- update the  boy to the humongous
-
-      } else {
-
-        //TODO- insert the  boy to the humongous
-
-      }
-
-
-
+//      val updateDate = dataCollection.find()
+//        .projection(Projections.fields(Projections.include("floatSerialNo")))
+//        .first()
+//
+//      val isEmpty = helper.DocumentObservable(updateDate).results().size
+//
+//
+//      if (isEmpty != 0) {
+//
+//        //TODO- update the  boy to the humongous
+//
+//      } else {
+//
+//        //TODO- insert the  boy to the humongous
+//
+//      }
 
       // delete the source file
       new File(downloadPath + documentName).delete()
 
 
     }).collect()
-
 
   }
 
@@ -166,7 +173,7 @@ class MongoController(sc: SparkContext) {
   /**
     * check if the data update date is changed, if so change it in the database
     */
-  def checkLastUpdate(buoy_list_df: DataFrame): Unit = {
+  def checkLastUpdate: Unit = {
 
 
     val updateDateFromMongo = getLastUpdate // get the update date from the db
@@ -200,31 +207,10 @@ class MongoController(sc: SparkContext) {
       }
 
 
-
-      // save/update the new date of the Boys
-
-      saveLatestData(buoy_list_df)
-
-
-      //    val writeConfig = WriteConfig(MongoSparkap("collection" -> "lastupdate", "writeConcern.w" -> "majority", "replaceDocument" -> "true"), Some(WriteConfig(sc)))
-      //    val sparkDocuments = sc.parallelize((1 to 1).map(i => Document.parse(s"{date: $lastUpdate}")))
-      //    MongoSpark.save(sparkDocuments, writeConfig)
-
-      //save the new data to humongous
-      //      val buoy_list = new ThisWeekList(sc, spark.sqlContext)
-      //      val buoy_list_df = buoy_list.toDF.rdd
-      //      saveLatestData(buoy_list_df)
-
     }
 
+          saveLatestData
 
-
-    //              val doc: Document = Document("_id" -> 1,
-    //                  "name" -> "Last Date of Buoys Update",
-    //                  "date" -> "20181230000309")
-    //        //update work
-    //        updateTimeCollection.replaceOne(Filters.eq("_id", 1), doc
-    //        ).subscribe((updateResult: UpdateResult) => println(updateResult))
 
 
   }
