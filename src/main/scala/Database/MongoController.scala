@@ -37,26 +37,17 @@ import org.mongodb.scala.model.Updates._
 import org.mongodb.scala.model.Filters._
 
 
-class MongoController(sc: SparkContext) extends Serializable{
+object MongoController {
 
 
   // Use a Connection String
-  @transient
   val mongoClient: MongoClient = MongoClient("mongodb://localhost:27017")
-  @transient
   val database: MongoDatabase = mongoClient.getDatabase("test")
-  @transient
   val updateTimeCollection: MongoCollection[Document] = database.getCollection("lastupdate")
-  @transient
   val dataCollection: MongoCollection[Document] = database.getCollection("coll")
 
 
-  @transient
   val downloadsPath = "src/main/resources/Downloads/"
-
-
-  val sparkCon = this.sc
-
 
 
   /**
@@ -65,8 +56,7 @@ class MongoController(sc: SparkContext) extends Serializable{
   def saveLatestData: Unit = {
 
 
-
-    val buoy_list = new ThisWeekList(sparkCon, spark.sqlContext)
+    val buoy_list = new ThisWeekList(sc, spark.sqlContext)
     val buoydf = buoy_list.toDF.rdd
 
     //path where the files will be saved from the server
@@ -74,7 +64,7 @@ class MongoController(sc: SparkContext) extends Serializable{
 
     //if the Download directory doesnt exist create it
 
-    val scc = sparkCon.parallelize(buoydf.collect)
+    val scc = sc.parallelize(buoydf.collect)
 
     scc.map(x => {
 
@@ -84,32 +74,31 @@ class MongoController(sc: SparkContext) extends Serializable{
       // Grab the last segment
       val documentName = segments(segments.length - 1)
 
-
       //get the source file from the server
       new URL("ftp://ftp.ifremer.fr/ifremer/argo/dac/" + path) #> new File(downloadPath + documentName) !!
-
 
       val bd = new BuoyData(downloadPath + documentName)
 
       println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
 
       //get the doc from mongo
-//      val updateDate = dataCollection.find()
-//        .projection(Projections.fields(Projections.include("floatSerialNo")))
-//        .first()
-//
-//      val isEmpty = helper.DocumentObservable(updateDate).results().size
-//
-//
-//      if (isEmpty != 0) {
-//
-//        //TODO- update the  boy to the humongous
-//
-//      } else {
-//
-//        //TODO- insert the  boy to the humongous
-//
-//      }
+      val updateDate = dataCollection.find()
+        .projection(Projections.fields(Projections.include("floatSerialNo")))
+        .first()
+
+      val isEmpty = Helpers.DocumentObservable(updateDate).results().size
+
+      println(isEmpty)
+
+      if (isEmpty != 0) {
+
+        //TODO- update the  boy to the humongous
+
+      } else {
+
+        //TODO- insert the  boy to the humongous
+
+      }
 
       // delete the source file
       new File(downloadPath + documentName).delete()
@@ -176,41 +165,40 @@ class MongoController(sc: SparkContext) extends Serializable{
   def checkLastUpdate: Unit = {
 
 
-    val updateDateFromMongo = getLastUpdate // get the update date from the db
-    val lastUpdateDateFromServer = loadLatestUpdateDate // get the update date from the server
+//    val updateDateFromMongo = getLastUpdate // get the update date from the db
+//    val lastUpdateDateFromServer = loadLatestUpdateDate // get the update date from the server
+//
+//        if (updateDateFromMongo != lastUpdateDateFromServer) {
+//
+//
+//          if (getLastUpdate.isEmpty) {
+//
+//            //insert date
+//            val doc: Document = Document("_id" -> 1,
+//              "name" -> "Last Date of Buoys Update",
+//              "date" -> lastUpdateDateFromServer)
+//
+//            updateTimeCollection.insertOne(doc)
+//              .subscribe(new Observer[Completed] {
+//                override def onNext(result: Completed): Unit = println("Inserted")
+//
+//                override def onError(e: Throwable): Unit = println("Failed")
+//
+//                override def onComplete(): Unit = println("Completed")
+//              })
+//
+//          } else {
+//
+//            // update the new date to the humongous
+//            val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
+//            Helpers.GenericObservable(x).printHeadResult()
+//
+//          }
+//
+//
+//        }
 
-    if (updateDateFromMongo != lastUpdateDateFromServer) {
-
-
-      if (getLastUpdate.isEmpty) {
-
-        //insert date
-        val doc: Document = Document("_id" -> 1,
-          "name" -> "Last Date of Buoys Update",
-          "date" -> lastUpdateDateFromServer)
-
-        updateTimeCollection.insertOne(doc)
-          .subscribe(new Observer[Completed] {
-            override def onNext(result: Completed): Unit = println("Inserted")
-
-            override def onError(e: Throwable): Unit = println("Failed")
-
-            override def onComplete(): Unit = println("Completed")
-          })
-
-      } else {
-
-        // update the new date to the humongous
-        val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
-        Helpers.GenericObservable(x).printHeadResult()
-
-      }
-
-
-    }
-
-          saveLatestData
-
+    saveLatestData
 
 
   }

@@ -69,8 +69,7 @@ object RunProcedure {
     //    val bdDF = bd.getDF(sc, spark.sqlContext)
 
 
-    val mg = new MongoController(sc)
-    mg.checkLastUpdate
+    MongoController.checkLastUpdate
 
     //    buoy_list_df.show // print DataFrame as formatted table
     //    val first_file = buoy_list_df.select("file").first.mkString
