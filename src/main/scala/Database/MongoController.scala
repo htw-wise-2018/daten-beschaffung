@@ -165,38 +165,38 @@ object MongoController {
   def checkLastUpdate: Unit = {
 
 
-//    val updateDateFromMongo = getLastUpdate // get the update date from the db
-//    val lastUpdateDateFromServer = loadLatestUpdateDate // get the update date from the server
-//
-//        if (updateDateFromMongo != lastUpdateDateFromServer) {
-//
-//
-//          if (getLastUpdate.isEmpty) {
-//
-//            //insert date
-//            val doc: Document = Document("_id" -> 1,
-//              "name" -> "Last Date of Buoys Update",
-//              "date" -> lastUpdateDateFromServer)
-//
-//            updateTimeCollection.insertOne(doc)
-//              .subscribe(new Observer[Completed] {
-//                override def onNext(result: Completed): Unit = println("Inserted")
-//
-//                override def onError(e: Throwable): Unit = println("Failed")
-//
-//                override def onComplete(): Unit = println("Completed")
-//              })
-//
-//          } else {
-//
-//            // update the new date to the humongous
-//            val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
-//            Helpers.GenericObservable(x).printHeadResult()
-//
-//          }
-//
-//
-//        }
+    val updateDateFromMongo = getLastUpdate // get the update date from the db
+    val lastUpdateDateFromServer = loadLatestUpdateDate // get the update date from the server
+
+        if (updateDateFromMongo != lastUpdateDateFromServer) {
+
+
+          if (getLastUpdate.isEmpty) {
+
+            //insert date
+            val doc: Document = Document("_id" -> 1,
+              "name" -> "Last Date of Buoys Update",
+              "date" -> lastUpdateDateFromServer)
+
+            updateTimeCollection.insertOne(doc)
+              .subscribe(new Observer[Completed] {
+                override def onNext(result: Completed): Unit = println("Inserted")
+
+                override def onError(e: Throwable): Unit = println("Failed")
+
+                override def onComplete(): Unit = println("Completed")
+              })
+
+          } else {
+
+            // update the new date to the humongous
+            val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
+            Helpers.GenericObservable(x).printHeadResult()
+
+          }
+
+
+        }
 
     saveLatestData
 
