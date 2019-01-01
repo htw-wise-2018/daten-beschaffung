@@ -4,34 +4,11 @@ import sys.process._
 import java.net.URL
 import java.io.File
 
-import com.mongodb.client.model.{Filters, Projections}
-import main.RunProcedure.sc
-import org.apache.spark.SparkContext
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Row, SparkSession}
-import org.mongodb.scala.result.UpdateResult
-//import org.bson.Document
-import com.mongodb.spark._
-import com.mongodb.spark.config._
+import com.mongodb.client.model.{Projections}
 import main.RunProcedure.{sc, spark}
 import netcdfhandling.BuoyData
 import preprocessing.ThisWeekList
-
-import scala.io.Source
-import java.io.{FileNotFoundException, IOException}
-import java.io._
-import java.math.BigInteger
-
-
-import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types._
-import org.apache.spark.sql.{DataFrame, Row, SQLContext}
-import ucar.nc2._
-import eccoutil.ArgoFloatException
-import collection.JavaConverters._
-import Database.Helpers
-import org.mongodb.scala.model.Updates._
 import org.mongodb.scala._
 import org.mongodb.scala.model.Updates._
 import org.mongodb.scala.model.Filters._
@@ -53,7 +30,7 @@ object MongoController {
   /**
     * get the latest netcdf data from the server and "add them" to the database
     */
-  def saveLatestData: Unit = {
+  def saveLatestData(): Unit = {
 
 
     val buoy_list = new ThisWeekList(sc, spark.sqlContext)
@@ -74,29 +51,51 @@ object MongoController {
       // Grab the last segment
       val documentName = segments(segments.length - 1)
 
-      //get the source file from the server
+      //get the buoys data file from the server
       new URL("ftp://ftp.ifremer.fr/ifremer/argo/dac/" + path) #> new File(downloadPath + documentName) !!
 
       val bd = new BuoyData(downloadPath + documentName)
 
-      println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
+      val checkDoc = dataCollection.find(equal("floatSerialNo", bd.getMap("floatSerialNo").mkString(","))).first()
 
-      //get the doc from mongo
-      val updateDate = dataCollection.find()
-        .projection(Projections.fields(Projections.include("floatSerialNo")))
-        .first()
+      //size of the founded documents result
+      val isEmpty = Helpers.DocumentObservable(checkDoc).results().size
 
-      val isEmpty = Helpers.DocumentObservable(updateDate).results().size
 
-      println(isEmpty)
+      //buoy's data to be saved
+      val doc: Document = Document(
+        "floatSerialNo" -> bd.getMap("floatSerialNo").mkString(","),
+        "longitude" -> bd.getMap("floatSerialNo").mkString(","),
+        "latitude" -> bd.getMap("latitude").mkString(","),
+        "platformNumber" -> bd.getMap("platformNumber").mkString(","),
+        "projectName" -> bd.getMap("projectName").mkString(","),
+        "juld" -> bd.getMap("juld").mkString(","),
+        "platformType" -> bd.getMap("platformType").mkString(","),
+        "configMissionNumber" -> bd.getMap("configMissionNumber").mkString(","),
+        "cycleNumber" -> bd.getMap("cycleNumber").mkString(","),
+        "pres" -> bd.getMap("pres").mkString(","),
+        "temp" -> bd.getMap("temp").mkString(","),
+        "psal" -> bd.getMap("psal").mkString(",")
+      )
 
+      //check if the document is already inserted to the database
       if (isEmpty != 0) {
 
-        //TODO- update the  boy to the humongous
+        // update the new date to the humongous
+        val xde = dataCollection.replaceOne(equal("floatSerialNo", "4011"), doc)
+        Helpers.GenericObservable(xde).printHeadResult()
 
       } else {
 
-        //TODO- insert the  boy to the humongous
+        //insert a document
+        dataCollection.insertOne(doc)
+          .subscribe(new Observer[Completed] {
+            override def onNext(result: Completed): Unit = println("Inserted")
+
+            override def onError(e: Throwable): Unit = println("Failed")
+
+            override def onComplete(): Unit = println("Completed")
+          })
 
       }
 
@@ -155,54 +154,50 @@ object MongoController {
     * @tparam T
     * @return
     */
-  def isEmpty[T](rdd: RDD[T]) = {
+  def isEmpty[T](rdd: RDD[T]): Boolean = {
     rdd.take(1).length == 0
   }
 
   /**
     * check if the data update date is changed, if so change it in the database
     */
-  def checkLastUpdate: Unit = {
+  def checkLastUpdate(): Unit = {
 
 
     val updateDateFromMongo = getLastUpdate // get the update date from the db
     val lastUpdateDateFromServer = loadLatestUpdateDate // get the update date from the server
 
-        if (updateDateFromMongo != lastUpdateDateFromServer) {
+    if (updateDateFromMongo != lastUpdateDateFromServer) {
 
 
-          if (getLastUpdate.isEmpty) {
+      if (getLastUpdate.isEmpty) {
 
-            //insert date
-            val doc: Document = Document("_id" -> 1,
-              "name" -> "Last Date of Buoys Update",
-              "date" -> lastUpdateDateFromServer)
+        //insert date
+        val doc: Document = Document("_id" -> 1,
+          "name" -> "Last Date of Buoys Update",
+          "date" -> lastUpdateDateFromServer)
 
-            updateTimeCollection.insertOne(doc)
-              .subscribe(new Observer[Completed] {
-                override def onNext(result: Completed): Unit = println("Inserted")
+        updateTimeCollection.insertOne(doc)
+          .subscribe(new Observer[Completed] {
+            override def onNext(result: Completed): Unit = println("Inserted")
 
-                override def onError(e: Throwable): Unit = println("Failed")
+            override def onError(e: Throwable): Unit = println("Failed")
 
-                override def onComplete(): Unit = println("Completed")
-              })
+            override def onComplete(): Unit = println("Completed")
+          })
 
-          } else {
+      } else {
 
-            // update the new date to the humongous
-            val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
-            Helpers.GenericObservable(x).printHeadResult()
+        // update the new date to the humongous
+        val x = updateTimeCollection.updateOne(equal("_id", 1), set("date", lastUpdateDateFromServer))
+        Helpers.GenericObservable(x).printHeadResult()
 
-          }
+      }
 
-          saveLatestData
+      //update the database
+      saveLatestData()
 
-        }
-
-
-
+    }
   }
-
-
 }
 
