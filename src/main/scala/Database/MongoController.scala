@@ -195,10 +195,10 @@ object MongoController {
 
           }
 
+          saveLatestData
 
         }
 
-    saveLatestData
 
 
   }
