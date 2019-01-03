@@ -1,35 +1,33 @@
 package main
 
-import org.apache.log4j.{Level, Logger}
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SparkSession, DataFrame, Row, SQLContext}
-import com.mongodb.spark._
-
-
-import org.bson.Document
-import org.bson.types.ObjectId
-
+import org.apache.log4j.{ Level, Logger }
+import org.apache.spark.{ SparkConf, SparkContext }
+import org.apache.spark.sql.{ SparkSession }
 import preprocessing.ThisWeekList
 import netcdfhandling.BuoyData
 
+
+/** Main object to run argo-data retrieval.
+  * @author Raimi Solorzano Niederhausen - s0557978@htw-berlin.de
+  */
 object RunProcedure {
 
   // Omit INFO log in console
   val rootLogger = Logger.getLogger("org").setLevel(Level.WARN)
 
+  // Use environment variables for authentication
   val hadoopUser = sys.env("HTW_MONGO_USER")
   val hadoopPassword = sys.env("HTW_MONGO_PWD")
   val hadoopDB = sys.env("HTW_MONGO_DB")
-  val hadoopPort = sys.env.getOrElse("HTW_MONGO_PORT","27020")
+  val hadoopPort = sys.env.getOrElse("HTW_MONGO_PORT", "27020")
   val hadoopHost = sys.env.getOrElse("HTW_MONGO_HOST", "hadoop05.f4.htw-berlin.de")
-  
+
+  // Basic Spark configuration. Use 'buoy' as mongodb collection.
   val conf = new SparkConf()
     .setMaster("local")
     .setAppName("HTW-Argo")
-    .set("spark.mongodb.output.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy")
-    .set("spark.mongodb.input.uri",s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy?readPreference=primaryPreferred")
-
+    .set("spark.mongodb.output.uri", s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy")
+    .set("spark.mongodb.input.uri", s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy?readPreference=primaryPreferred")
   val sc = new SparkContext(conf)
   val spark = SparkSession
     .builder()
@@ -38,47 +36,37 @@ object RunProcedure {
     .getOrCreate()
 
   def main(args: Array[String]) {
-    //buoyDataDemoMongoDB
-    //thisWeekListDemo
+    saveAllFromThisWeekList
+    sc.stop()
+    spark.stop()
   }
 
-  def buoyDataDemo: Unit = {
-    println("-------- START : Buoy data demo ---------")
-    val bd = new BuoyData
-    println(s"Longitude array:\n[${bd.getMap("longitude").mkString(",")}]")
-    println(bd.getGlobalAttributes)
-    println(bd.getMap.keys)
-    println(bd.getDF(sc, spark.sqlContext).show())
-    println("-------- END : Buoy data demo ---------")
-  }
- 
-  def thisWeekListDemo: Unit = {
-
-    println("-------- START : This week list demo ---------")
+  /** Download the new argo data from: ftp://ftp.ifremer.fr/ifremer/argo/
+    *
+    * 1. Retrieve index of new NetCDF files from: ftp://ftp.ifremer.fr/ifremer/argo/ar_index_this_week_prof.txt
+    * 2. Foreach new file run [[saveDataMongoDB]]
+    *
+    */
+  def saveAllFromThisWeekList: Unit = {
     val buoy_list = new ThisWeekList(sc, spark.sqlContext)
-    val buoy_list_df = buoy_list.toDF
-    buoy_list_df.show // print DataFrame as formatted table
-    val first_file = buoy_list_df.select("file").first.mkString
-    println(s"First file:\n${first_file}")
-    println("-------- END : This week list demo ---------")
+    val rootFTP = buoy_list.getRootFTP
+    val weeklist= buoy_list.toRDD.map(row => rootFTP + "/" + row.getString(0)).collect().toList
+    weeklist.foreach(saveDataMongoDB)
   }
-  
-  def buoyDataDemoMongoDB: Unit = {
-    println("-------- START : Buoy data demo ---------")
-    val bd = new BuoyData
+
+  /** Store argo-data in mongodb of one specific NetCDF file.
+    *
+    * @param filename NetCDF file path.
+    */
+  def saveDataMongoDB(filename: String): Unit = {
+    val bd = new BuoyData(filename)
     val bdDF = bd.getDF(sc, spark.sqlContext)
-    println(bdDF.show())
-    bdDF.select("floatSerialNo", "longitude", "latitude", "platformNumber", "projectName", "juld",
-        "platformType", "configMissionNumber", "cycleNumber","pres","temp","psal").write.
+    val extractCurrentParams = bdDF.select("parameter").first.get(0).asInstanceOf[Seq[Seq[String]]].flatten
+    val selectColumns = extractCurrentParams ++ Seq("floatSerialNo", "longitude", "latitude", "platformNumber", "projectName", "juld",
+      "platformType", "configMissionNumber", "cycleNumber")
+    bdDF.select(selectColumns.head, selectColumns.tail: _*).write.
       format("com.mongodb.spark.sql.DefaultSource").mode("append").
       save()
-    //val df2 = MongoSpark.load(spark)
-    //println(df2.show())
-    //val buoysFromDB = spark.read.
-    //  format("com.mongodb.spark.sql.DefaultSource").
-    //  load()
-    //println(buoysFromDB.show())
-    println("-------- END : Buoy data demo ---------")
   }
 
 }
