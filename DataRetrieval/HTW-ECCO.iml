@@ -131,6 +131,16 @@
     <libelement value="jar://$USER_HOME$/.ivy2/cache/org.apache.parquet/parquet-hadoop/jars/parquet-hadoop-1.7.0.jar!/" />
     <libelement value="jar://$USER_HOME$/.ivy2/cache/org.apache.parquet/parquet-format/jars/parquet-format-2.3.0-incubating.jar!/" />
     <libelement value="jar://$USER_HOME$/.ivy2/cache/org.apache.parquet/parquet-jackson/jars/parquet-jackson-1.7.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/edu.ucar/netcdf/jars/netcdf-4.2.20.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/edu.ucar/unidataCommon/jars/unidataCommon-4.2.20.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/net.jcip/jcip-annotations/jars/jcip-annotations-1.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.11/jars/mongo-scala-driver_2.11-2.4.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.11/jars/mongo-scala-bson_2.11-2.4.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-async/jars/mongodb-driver-async-3.8.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb/bson/jars/bson-3.8.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-core/jars/mongodb-driver-core-3.8.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb.spark/mongo-spark-connector_2.11/jars/mongo-spark-connector_2.11-2.3.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongo-java-driver/jars/mongo-java-driver-3.8.2.jar!/" />
     <conelement value="org.scala-ide.sdt.launching.SCALA_CONTAINER" />
     <conelement value="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER" />
     <src_description expected_position="0">
@@ -1790,6 +1800,135 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library name="netcdf-4.2.20.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/netcdf/jars/netcdf-4.2.20.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/netcdf/docs/netcdf-4.2.20-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/netcdf/srcs/netcdf-4.2.20-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="unidataCommon-4.2.20.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/unidataCommon/jars/unidataCommon-4.2.20.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/unidataCommon/docs/unidataCommon-4.2.20-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/edu.ucar/unidataCommon/srcs/unidataCommon-4.2.20-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jcip-annotations-1.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/net.jcip/jcip-annotations/jars/jcip-annotations-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/net.jcip/jcip-annotations/srcs/jcip-annotations-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongo-scala-driver_2.11-2.4.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.11/jars/mongo-scala-driver_2.11-2.4.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.11/docs/mongo-scala-driver_2.11-2.4.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.11/srcs/mongo-scala-driver_2.11-2.4.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongo-scala-bson_2.11-2.4.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.11/jars/mongo-scala-bson_2.11-2.4.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.11/docs/mongo-scala-bson_2.11-2.4.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.11/srcs/mongo-scala-bson_2.11-2.4.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongodb-driver-async-3.8.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-async/jars/mongodb-driver-async-3.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-async/docs/mongodb-driver-async-3.8.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-async/srcs/mongodb-driver-async-3.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bson-3.8.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/bson/jars/bson-3.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/bson/docs/bson-3.8.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/bson/srcs/bson-3.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongodb-driver-core-3.8.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-core/jars/mongodb-driver-core-3.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-core/docs/mongodb-driver-core-3.8.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongodb-driver-core/srcs/mongodb-driver-core-3.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongo-spark-connector_2.11-2.3.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.spark/mongo-spark-connector_2.11/jars/mongo-spark-connector_2.11-2.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.spark/mongo-spark-connector_2.11/docs/mongo-spark-connector_2.11-2.3.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb.spark/mongo-spark-connector_2.11/srcs/mongo-spark-connector_2.11-2.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mongo-java-driver-3.8.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongo-java-driver/jars/mongo-java-driver-3.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongo-java-driver/docs/mongo-java-driver-3.8.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.mongodb/mongo-java-driver/srcs/mongo-java-driver-3.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.11.8:jar" level="project" />
   </component>
 </module>
