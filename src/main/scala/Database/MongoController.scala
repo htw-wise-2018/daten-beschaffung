@@ -82,7 +82,7 @@ object MongoController {
       if (isEmpty != 0) {
 
         // update the new date to the humongous
-        val xde = dataCollection.replaceOne(equal("floatSerialNo", "4011"), doc)
+        val xde = dataCollection.replaceOne(equal("floatSerialNo", bd.getMap("floatSerialNo").mkString(",")), doc)
         Helpers.GenericObservable(xde).printHeadResult()
 
       } else {
