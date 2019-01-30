@@ -9,5 +9,8 @@ libraryDependencies ++= Seq(
 	"org.apache.spark" % "spark-core_2.11" % "2.0.0",
 	"org.apache.spark" % "spark-sql_2.11" % "2.0.0",
 	"edu.ucar" % "netcdf" % "4.2.20",
-	"org.mongodb.spark" % "mongo-spark-connector_2.11" % "2.3.1"
+	"org.mongodb.spark" % "mongo-spark-connector_2.11" % "2.3.1",
+	"com.typesafe.akka" % "akka-actor_2.11" % "2.5.19"
 )
+
+enablePlugins(JavaAppPackaging)

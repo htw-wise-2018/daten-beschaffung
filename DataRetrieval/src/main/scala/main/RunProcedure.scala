@@ -1,11 +1,13 @@
 package main
 
 import org.apache.log4j.{ Level, Logger }
+import akka.actor.{Actor, ActorSystem, Props}
 import org.apache.spark.{ SparkConf, SparkContext }
 import org.apache.spark.sql.{ SparkSession }
 import preprocessing.ThisWeekList
 import netcdfhandling.BuoyData
-
+import observer.FtpObserver
+import observer.Blob
 
 /** Main object to run argo-data retrieval.
   * @author Raimi Solorzano Niederhausen - s0557978@htw-berlin.de
@@ -26,6 +28,7 @@ object RunProcedure {
   val conf = new SparkConf()
     .setMaster("local")
     .setAppName("HTW-Argo")
+    .set("spark.ui.port", "4050")
     .set("spark.mongodb.output.uri", s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy")
     .set("spark.mongodb.input.uri", s"mongodb://$hadoopUser:$hadoopPassword@$hadoopHost:$hadoopPort/$hadoopDB.buoy?readPreference=primaryPreferred")
   val sc = new SparkContext(conf)
@@ -36,9 +39,12 @@ object RunProcedure {
     .getOrCreate()
 
   def main(args: Array[String]) {
-    saveAllFromThisWeekList
-    sc.stop()
-    spark.stop()
+    //saveAllFromThisWeekList
+    val actorSystem = ActorSystem("eccoActorSystem")
+    
+    val ftpObserver = actorSystem.actorOf(FtpObserver.props(saveAllFromThisWeekList), "ftpObserver")
+    //sc.stop()
+    //spark.stop()
   }
 
   /** Download the new argo data from: ftp://ftp.ifremer.fr/ifremer/argo/
@@ -47,7 +53,7 @@ object RunProcedure {
     * 2. Foreach new file run [[saveDataMongoDB]]
     *
     */
-  def saveAllFromThisWeekList: Unit = {
+  def saveAllFromThisWeekList(): Unit = {
     val buoy_list = new ThisWeekList(sc, spark.sqlContext)
     val rootFTP = buoy_list.getRootFTP
     val weeklist= buoy_list.toRDD.map(row => rootFTP + "/" + row.getString(0)).collect().toList
