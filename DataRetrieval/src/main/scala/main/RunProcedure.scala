@@ -7,7 +7,6 @@ import org.apache.spark.sql.{ SparkSession }
 import preprocessing.ThisWeekList
 import netcdfhandling.BuoyData
 import observer.FtpObserver
-import observer.Blob
 
 /** Main object to run argo-data retrieval.
   * @author Raimi Solorzano Niederhausen - s0557978@htw-berlin.de
