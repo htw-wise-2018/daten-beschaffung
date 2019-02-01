@@ -21,6 +21,9 @@ sind die Folgenden:
 
 Aus Sicherheitsgründen veröffentlichen wir die zugehörigen Werte nicht.
 
+**Wichtiger Hinweis:** Beim setzen der Umgebungsvariablen kann es sein, dass der Rechner neugestartet werden muss, damit die 
+Umgebungsvariablen korrekt gelesen werden können.
+
 ## Programm starten
 Vor dem Starten: Bitte siehe Kapitel *Vorraussetzung*.
 
